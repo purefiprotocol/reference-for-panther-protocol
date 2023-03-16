@@ -31,7 +31,7 @@ have AML risk that does not exceed lower threshold or
 have AML risk score between lower and upper thresholds and have bound KYC pass.
 ```
 
-### Request
+### Request type 2
 
 `POST /v3/rule`
 
@@ -44,6 +44,19 @@ have AML risk score between lower and upper thresholds and have bound KYC pass.
       sender: string                // From address
       chainId: string               // 1, 56, 137
       receiver: string              // To address
+      skipCheckSignature: boolean   // Skip subscription verification (please currently use True cause your wallets do not have subscriptions)
+    }
+
+### Request type 1
+
+`POST /v3/rule`
+
+    curl -i -H 'Accept: application/json', 'PUREFI-API-KEY: ***'
+    https://business-backend.app.purefi.io/v3/rule
+    {
+      ruleId: string                // "777"
+      sender: string                // From address
+      chainId: string               // 1, 56, 137
       skipCheckSignature: boolean   // Skip subscription verification (please currently use True cause your wallets do not have subscriptions)
     }
 
@@ -114,7 +127,15 @@ have AML risk score between lower and upper thresholds and have bound KYC pass.
     	amount: "0x056bc75e2d63100000",
     	receiver: "0x2c6900b24221de2b4a45c8c89482fff96ffb7e55",
     	token: "0xe3a59d5e33c6540e18aaa46bf98917ac3158db0d",
+      skipCheckSignature: true,
     	chainId: 56
+    }
+
+    {
+      sender: "0x1ccf9d9b43e0390718512103e3713602fa42fb53",
+      ruleId: "777",
+      chainId: "56",
+      skipCheckSignature: true
     }
 
 #### Error required kyc

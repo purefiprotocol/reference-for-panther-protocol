@@ -21,7 +21,7 @@ const provider = new JsonRpcProvider(
 );
 
 const baseURL = 'https://business-backend.app.purefi.io';
-const clientPrivateKey = 'bcd14c07de84a22922297480caf7544ff87dbe6c53c2455ec0f3cff9bcce3378';
+const clientPrivateKey = '0c25287fba0ccfbdf242d749ee0709ceb185f17b6c9877b9bdd47cc7929cccb4';
 
 const data = {
   sender: "0xe821a0441c795c10d114d186b758fbf8495f259a",
@@ -29,7 +29,7 @@ const data = {
   amount: "0x056bc75e2d63100000",
   receiver: "0x2c6900b24221de2b4a45c8c89482fff96ffb7e55",
   token: "0xe2a59d5e33c6540e18aaa46bf98917ac3158db0d",
-  skipCheckSignature: false,
+  skipCheckSignature: true,
   chainId: 56
 };
 
