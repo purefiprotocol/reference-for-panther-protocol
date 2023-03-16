@@ -12,7 +12,8 @@ The entire application is contained within the `index.js` file.
 # install package
 $ yarn
 # run
-$ yarn start --apiKey= ***
+$ yarn start:type1 --apiKey= ***
+$ yarn start:type2 --apiKey= ***
 ```
 
 # REST API
