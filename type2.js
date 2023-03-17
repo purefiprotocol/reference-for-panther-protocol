@@ -21,7 +21,7 @@ const provider = new JsonRpcProvider(
   }
 );
 
-const baseURL = 'http://localhost:5000';
+const baseURL = 'https://business-backend.app.purefi.io';
 const clientPrivateKey = '0c25287fba0ccfbdf242d749ee0709ceb185f17b6c9877b9bdd47cc7929cccb4';
 const issuerPublicKey = [
   new Uint8Array([
