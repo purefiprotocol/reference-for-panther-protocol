@@ -102,7 +102,27 @@ const run = async  () => {
 
   const abiCoder = AbiCoder.defaultAbiCoder();
   const [timestamp, signature, purefiPackage] = abiCoder.decode(["uint64", "bytes", "bytes"], purefiData)
-  
+
+  const [packageType, ruleId, sessionIdHex, sender, receiver, token, amount] = abiCoder.decode([
+    "uint8",
+    "uint256",
+    "uint256",
+    "address",
+    "address",
+    "address",
+    "uint256",
+  ], purefiPackage);
+
+  console.log('purefiPackage:', {
+    packageType: Number(packageType), 
+    ruleId: Number(ruleId), 
+    sessionIdHex: Number(sessionIdHex), 
+    sender, 
+    receiver, 
+    token, 
+    amount: Number(amount)
+  })
+
   const isValid = await validSignature(timestamp, signature, purefiPackage, issuerPublicKey);
 
   console.log('isValid:', isValid);
