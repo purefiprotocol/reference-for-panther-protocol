@@ -5,45 +5,44 @@ const { Wallet, AbiCoder, JsonRpcProvider, solidityPacked, getBytes } = require(
 
 const args = process.argv.slice(2);
 
-const apiKey = args
-  .find((arg) => arg.startsWith("--apiKey="))
-  ?.replace("--apiKey=", "")
+const clientPrivateKey = args
+  .find((arg) => arg.startsWith("--privateKey="))
+  ?.replace("--privateKey=", "")
 
-if(!apiKey) {
-  throw new Error('Invalid api key')
+if(!clientPrivateKey) {
+  throw new Error('Invalid client private key')
 }
 
 const provider = new JsonRpcProvider(
-  "https://bsc-dataseed1.binance.org",
+  'https://matic-mumbai.chainstacklabs.com',
   {
-    chainId: 56,
-    name: "bsc-mainnet",
-  }
+    chainId: 80001,
+    name: 'polygon-mumbai',
+  },
 );
 
-const baseURL = 'https://business-backend.app.purefi.io';
-const clientPrivateKey = '0c25287fba0ccfbdf242d749ee0709ceb185f17b6c9877b9bdd47cc7929cccb4';
+const baseURL = 'https://stage.issuer.app.purefi.io';
 const issuerPublicKey = [
   new Uint8Array([
-    251,  86, 208, 224, 165,  72, 217,
-    166, 211, 141, 255, 229, 214, 147,
-     19, 195, 226, 172, 215, 167, 100,
-    123, 117,  51,  26, 234,  85, 111,
-    119,  73, 246,  14
+    249, 243, 115, 223,  54, 127, 193,
+     99, 194, 199, 141,  87, 250, 138,
+    219, 226,  40, 110, 139, 211, 223,
+    109,  75, 209,  53, 246, 120, 255,
+    217, 129, 180,  41
   ]),
   new Uint8Array([
-    195, 246, 45, 214,  94, 231, 2, 197,
-    106, 156, 8, 129,  15, 127,  74, 101,
-     76, 124,  81,  33, 209, 104, 179,  42,
-    239, 254, 155, 190,  50, 120, 106,  10
+    88, 142,  94, 222, 156, 192, 121,  80,
+   108, 249, 218, 225, 179,  24,  66, 148,
+   188, 177, 180,  29, 184, 132, 216,  90,
+    38, 204,  46, 184,  53, 251,  88,  14
   ])
 ];
 
 const dataType1 = {
-  sender: "0x1ccf9d9b43e0390718512103e3713602fa42fb53",
+  sender: "0x6738A0F6E68219111189827c87EbCAD653677bAe",
+  receiver: "0x712415609e1727F25637a03B08C5c5Bab10911fb",
   ruleId: "777",
-  chainId: "56",
-  skipCheckSignature: true
+  chainId: "80001"
 };
 
 const signer = new Wallet(clientPrivateKey, provider);
@@ -53,17 +52,14 @@ const postRule = async () => {
   const signature = await signer.signMessage(message);
 
   const instance = create({
-    baseURL,
-    headers: {
-      'PUREFI-API-KEY': apiKey,
-    }
+    baseURL
   });
 
   try {
-    const res = await instance.post('/v3/rule', {
+    const res = await instance.post('/v4/rule', {
       message,
       signature,
-      signatureType: 'eddsa_jubjub',
+      signType: 'babyJubJub',
     });
 
     return res.data;
@@ -83,7 +79,7 @@ const validSignature = async (timestamp, signature, purefiPackage, issuerPublicK
   const message = getBytes(messageData);
   const msg = eddsa.babyJub.F.e(Scalar.fromRprLE(message, 0));
   const pSignature = getBytes(signature);
-
+  
   const uSignature = eddsa.unpackSignature(pSignature);
   
   const isValid = eddsa.verifyPoseidon(msg, uSignature, issuerPublicKey);
