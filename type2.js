@@ -70,21 +70,57 @@ const postRule = async () => {
   }
 };
 
+const bufferToBigInt = (buf) => {
+  const hex = buf.toString('hex');
+  if (hex.length === 0) {
+    return BigInt(0);
+  }
+  return BigInt(`0x${hex}`);
+};
+
+function uint8ArrayToBigInt(uint8Array) {
+  return bufferToBigInt(Buffer.from(uint8Array));
+}
+
+function extractBigInt(message, start, offset = 32) {
+  console.log(start, offset, message.slice(start, start + offset));
+  return uint8ArrayToBigInt(
+    new Uint8Array(message.slice(start, start + offset)),
+  );
+}
+
 const validSignature = async (timestamp, signature, purefiPackage, issuerPublicKey) => {
   const eddsa = await buildEddsa();
   
-  const messageData = solidityPacked(
-    ["uint64", "bytes"],
-    [timestamp, purefiPackage]
+  const message = getBytes(
+    solidityPacked(["uint64", "bytes"], [timestamp, purefiPackage])
   );
   
-  const message = getBytes(messageData);
-  const msg = eddsa.babyJub.F.e(Scalar.fromRprLE(message, 0));
+  const _timestamp = extractBigInt(message, 0, 8); // start: 0, offset: 8 bytes
+  const _pkgType = extractBigInt(message, 39, 1); // start: 8, offset: 1 byte
+  const _ruleId = extractBigInt(message, 40, 32); // start: 40, offset: 32 bytes
+  const _sessionIdHex = extractBigInt(message, 72, 31); // start: 72, offset: 32 bytes
+  const _sender = extractBigInt(message, 116, 20); // start: 104, offset: 20 bytes (address)
+  const _receiver = extractBigInt(message, 148, 20); // start: 136, offset: 20 bytes (address)
+  const _token = extractBigInt(message, 180, 20); // start: 168, offset: 20 bytes (address)
+  const _amount = extractBigInt(message, 200, 32); // start: 200, offset: 32 bytes
+  
+  const messageHash = eddsa.poseidon([
+    _pkgType,
+    _timestamp,
+    _sender,
+    _receiver,
+    _token,
+    _sessionIdHex,
+    _ruleId,
+    _amount,
+  ]);
+
   const pSignature = getBytes(signature);
 
   const uSignature = eddsa.unpackSignature(pSignature);
   
-  const isValid = eddsa.verifyPoseidon(msg, uSignature, issuerPublicKey);
+  const isValid = eddsa.verifyPoseidon(messageHash, uSignature, issuerPublicKey);
 
   return isValid;
 } 
