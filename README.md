@@ -12,6 +12,7 @@ The entire application is contained within the `index.js` file.
 # install package
 $ yarn
 # run
+$ yarn start <rule> <privateKey>
 $ yarn start:type1 --privateKey=***
 $ yarn start:type2 --privateKey=***
 ```

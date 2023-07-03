@@ -10,6 +10,7 @@
     "ffjavascript": "^0.2.57"
   },
   "scripts": {
+    "start": "node index.js $*",
     "start:type1": "node ./type1.js",
     "start:type2": "node ./type2.js"
   }

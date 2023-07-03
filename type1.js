@@ -97,7 +97,7 @@ const validSignature = async (timestamp, signature, purefiPackage, issuerPublicK
   const _timestamp = extractBigInt(message, 0, 8); // start: 0, offset: 8 bytes
   const _pkgType = extractBigInt(message, 39, 1); // start: 8, offset: 1 byte
   const _ruleId = extractBigInt(message, 40, 32); // start: 40, offset: 32 bytes
-  const _sessionIdHex = extractBigInt(message, 72, 32); // start: 72, offset: 32 bytes
+  const _sessionIdHex = extractBigInt(message, 72, 31); // start: 72, offset: 32 bytes
   const _sender = extractBigInt(message, 116, 20); // start: 104, offset: 20 bytes (address)
   const _receiver = extractBigInt(message, 148, 20); // start: 136, offset: 20 bytes (address)
 
