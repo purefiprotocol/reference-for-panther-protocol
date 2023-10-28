@@ -104,6 +104,7 @@ const validSignature = async (timestamp, signature, purefiPackage, issuerPublicK
   const _receiver = extractBigInt(message, 148, 20); // start: 136, offset: 20 bytes (address)
   const _token = extractBigInt(message, 180, 20); // start: 168, offset: 20 bytes (address)
   const _amount = extractBigInt(message, 200, 32); // start: 200, offset: 32 bytes
+  const _signer = extractBigInt(message, 244, 20); // start: 232, offset: 20 bytes (address)
   
   const messageHash = eddsa.poseidon([
     _pkgType,
@@ -114,8 +115,9 @@ const validSignature = async (timestamp, signature, purefiPackage, issuerPublicK
     _sessionIdHex,
     _ruleId,
     _amount,
+    _signer,
   ]);
-
+  
   const pSignature = getBytes(signature);
 
   const uSignature = eddsa.unpackSignature(pSignature);
@@ -126,7 +128,7 @@ const validSignature = async (timestamp, signature, purefiPackage, issuerPublicK
 } 
 
 
-const run = async  () => {
+const run = async () => {
   const purefiData = await postRule();
 
   console.log('Result:', purefiData);
@@ -134,7 +136,7 @@ const run = async  () => {
   const abiCoder = AbiCoder.defaultAbiCoder();
   const [timestamp, signature, purefiPackage] = abiCoder.decode(["uint64", "bytes", "bytes"], purefiData)
 
-  const [packageType, ruleId, sessionIdHex, sender, receiver, token, amount] = abiCoder.decode([
+  const [packageType, ruleId, sessionIdHex, sender, receiver, token, amount, signer] = abiCoder.decode([
     "uint8",
     "uint256",
     "uint256",
@@ -142,6 +144,7 @@ const run = async  () => {
     "address",
     "address",
     "uint256",
+    "address",
   ], purefiPackage);
 
   console.log('purefiPackage:', {
@@ -151,7 +154,8 @@ const run = async  () => {
     sender, 
     receiver, 
     token, 
-    amount: Number(amount)
+    amount: Number(amount),
+    signer
   })
 
   const isValid = await validSignature(timestamp, signature, purefiPackage, issuerPublicKey);
