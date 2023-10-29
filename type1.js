@@ -79,6 +79,7 @@ const postRule = async () => {
       message,
       signature,
       signType: 'babyJubJub',
+      setSigner: true,
     });
 
     return res.data;
